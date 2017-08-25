@@ -213,4 +213,14 @@ And when we supply the needed data:
 }
 ```
 
+To prevent this post from getting out of hand, I beg you to check out the source files yourself
+and see how the `PUT` handler works. And by the way, there is no handler for `DELETE`. I'm not saying
+you should write it, but honestly it's not hard.
 
+To run the app at this stage, just `node bin/www` and you are good to go.
+If you are going to be poking around with the code on your machine, install nodemon instead to help
+you reload automatically when you make changes.
+
+What else can I say? Make a pull request if you find any mistakes, or you want to add anything.
+
+See you next time.
