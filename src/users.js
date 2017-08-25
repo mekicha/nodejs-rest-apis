@@ -41,20 +41,13 @@ router.post('/', (req, res) => {
 
   req.getValidationResult().then((result) => {
     const errors = result.array();
-    if (errors.length !== 0) {
-      res.abort(400);
+    if (errors.length > 0) {
+     return res.status(400).end();
     }
-  })
-  .catch(e => e);
+  });
 
   username = req.body.username;
   email = req.body.email;
-
-  const response = {};
-  response.data = [{
-    username: username,
-    email: email
-  }];
 
   const query = mqb.insert(
     'users', {
@@ -64,16 +57,21 @@ router.post('/', (req, res) => {
   ).exec();
 
   query.then(result => {
-      response.id = result.insertId;
-      response.errors = null;
+
       return res.json({
-        response
+        data: [{
+          username,
+          email
+        }],
+        id: result.insertId,
+        errors: null
       });
     })
     .catch(error => {
       response.errors = error;
       return res.json({
-        response
+        data:[],
+        error:'error saving data'
       });
     });
 
