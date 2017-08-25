@@ -5,22 +5,29 @@ const config = require('./config');
 
 const mqb = new queryBuilder(config);
 
-router.get('/', (req, res, next) =>{
+router.get('/', (req, res) => {
   // return all users
   const query = mqb.select('*')
                 .from('users')
                 .exec();
-  query.then(result => {
-    console.log('db result: ', result);
-    return res.json({ users: result });
-  }).catch(error => {
-    console.log('db error: ', error);
-    return res.json({ error: error });
-  });
+
+  const response = {};
+  res.json(makeResponse(query, response));
 
 });
 
-router.post('/', (req, res, next) => {
+router.get('/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  const query = mqb.select('*')
+                .from('users')
+                .where('id', id)
+                .exec();
+  response = {};
+  res,json(makeResponse(query, response));
+});
+
+router.post('/', (req, res) => {
   // create a new user.
   req.checkBody('username', 'username is required').notEmpty();
   req.checkBody('email', 'email is required').notEmpty().isEmail();
@@ -37,10 +44,10 @@ router.post('/', (req, res, next) => {
 
   const response = {};
   response.url = req.url;
-  response.data = {
+  response.data = [{
     username: username,
     email: email
-  };
+  }];
 
   const query = mqb.insert(
     'users',
@@ -60,3 +67,21 @@ router.post('/', (req, res, next) => {
 });
 
 module.exports = router;
+
+
+function makeResponse(query, response) {
+  return query.then(result => {
+    response.errors = null;
+    if (result.insertId) {
+      response.id = result.insertId;
+    } else {
+      response.data = [];
+      result.forEach(res =>(response.data.push(res)));
+    }
+    console.log(response);
+    return response;
+  }).catch(error => {
+    response.errors = error;
+    return response;
+  });
+}
