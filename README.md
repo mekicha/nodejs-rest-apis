@@ -9,6 +9,8 @@ Of course, you will need the mysql driver as well. That too is just `npm i -S my
 You can change the above commands to `npm install --save [module_name_here]` if you prefer. But remember the `save`.
 It's what adds the module as a dependency to your project.
 
+But why go through all that hard work? All the dependencies are in the `package.json` file. Just `git  clone https://github.com/mekicha/nodejs-rest-apis`,  `cd nodejs-rest-apis` and `npm install`. That's all!
+
 Next, lo and behold the user model we will be interacting with.
 
 ```javascript
