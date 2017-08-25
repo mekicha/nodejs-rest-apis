@@ -37,16 +37,15 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   // create a new user.
   req.checkBody('username', 'username is required').notEmpty();
-  req.checkBody('email', 'email is required').notEmpty().isEmail();
+  req.checkBody('email', 'email is required').isEmail();
 
   req.getValidationResult().then((result) => {
     const errors = result.array();
     if (errors.length !== 0) {
-      res.json({
-        errors: errors
-      });
+      res.abort(400);
     }
-  });
+  })
+  .catch(e => e);
 
   username = req.body.username;
   email = req.body.email;
@@ -67,13 +66,13 @@ router.post('/', (req, res) => {
   query.then(result => {
       response.id = result.insertId;
       response.errors = null;
-      res.json({
+      return res.json({
         response
       });
     })
     .catch(error => {
       response.errors = error;
-      res.json({
+      return res.json({
         response
       });
     });
