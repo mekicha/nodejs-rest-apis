@@ -18,6 +18,9 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
+  if (!isNumeric(id)) {
+    return res.json({ data: [], error: 'id must be numeric' });
+  }
 
   const query = mqb.select('*')
                 .from('users')
@@ -44,7 +47,6 @@ router.post('/', (req, res) => {
   email = req.body.email;
 
   const response = {};
-  response.url = req.url;
   response.data = [{
     username: username,
     email: email
@@ -67,8 +69,29 @@ router.post('/', (req, res) => {
 
 });
 
-module.exports = router;
+router.put('/:id', (req, res) => {
+  id = parseInt(req.params.id, 10);
 
+  let payload = { id };
+
+  if (!isNumeric(id)) {
+    return res.json({ data: [], error: 'id must be numeric' });
+  }
+if (req.body.username) {
+  payload.username = req.body.username;
+}
+if( req.body.email) {
+  payload.email = req.body.email;
+}
+
+const query = mqb.update(
+  'users',
+  payload
+).exec();
+
+
+
+});
 
 function makeResponse(query, res) {
   let response = {};
@@ -82,3 +105,9 @@ function makeResponse(query, res) {
     res.json(response);
   });
 }
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+module.exports = router;
