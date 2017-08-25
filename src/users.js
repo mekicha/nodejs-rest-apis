@@ -11,8 +11,8 @@ router.get('/', (req, res) => {
                 .from('users')
                 .exec();
 
-  const response = {};
-  res.json(makeResponse(query, response));
+
+  makeResponse(query, res);
 
 });
 
@@ -23,9 +23,10 @@ router.get('/:id', (req, res) => {
                 .from('users')
                 .where('id', id)
                 .exec();
-  response = {};
-  res,json(makeResponse(query, response));
+
+  makeResponse(query, res);
 });
+
 
 router.post('/', (req, res) => {
   // create a new user.
@@ -69,19 +70,15 @@ router.post('/', (req, res) => {
 module.exports = router;
 
 
-function makeResponse(query, response) {
+function makeResponse(query, res) {
+  let response = {};
+  response.data = [];
+  response.errors = null;
   return query.then(result => {
-    response.errors = null;
-    if (result.insertId) {
-      response.id = result.insertId;
-    } else {
-      response.data = [];
-      result.forEach(res =>(response.data.push(res)));
-    }
-    console.log(response);
-    return response;
+    response.data = result;
+    res.json(response);
   }).catch(error => {
     response.errors = error;
-    return response;
+    res.json(response);
   });
 }
